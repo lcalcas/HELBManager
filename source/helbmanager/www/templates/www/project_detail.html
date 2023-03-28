@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block nav %}
+    {{ block.super }}
+    <li class="dropdown tile"><a href="{% url 'profile' %}">Profil</a></li>
+{% endblock %}
+{% block content %}
+    {% if user.is_authenticated %}
+        <div>
+            <div>
+                <h2>{{ project.title }}</h2>
+                <div>
+                    <small>
+                        {% if is_manager %}
+                            Vous êtes le chef de projet
+                        {% else %}
+                            Chef de projet - <b>{{ manager }}</b>
+                        {% endif %}
+                    </small>
+                </div>
+            </div>
+            <div>
+                <h2>Collaborateurs</h2>
+                <ul>
+                    {% for col in collaborators %}
+                        <li>
+                            <a>{{ col.username }}</a>
+                        </li>
+                    {% empty %}
+                        <p>Pas de collaborateurs...</p>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div>
+                <h2>Tâches</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            {% for st in status %}
+                                <th {% comment %} HERE {% endcomment %} style="background-color: {{ st.color }};">{{ st.designation }}</th>
+                            {% endfor %}
+                            <th>Sans status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for tk in tasks %}
+                            <tr class="dragRow">
+                                {% for st in status %}
+                                    <td>
+                                        <input type="hidden" class="status-id" value="{{ st.id }}">
+                                        {% if st == tk.status %}
+                                            <form class="task" method="post">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="task-id" value="{{ tk.id }}">
+                                                <input type="hidden" class="task-st-id" name="task-st-id" value="{{ tk.status.id }}">
+                                                <input type="hidden" name="update-task">
+                                                {% if is_manager %}
+                                                    <input onchange="this.form.submit();" type="text" name="designation" value="{{ tk.designation }}">
+                                                    <select onchange="this.form.submit();" name="user-id">
+                                                        <option value="0">-----</option>
+                                                        {% for tw in team %}
+                                                            <option {% if tw == tk.user %} selected {% endif %} value="{{ tw.id }}">{{ tw.username }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <a onclick="rmTask(this);" style="cursor: pointer;">×</a>
+                                                {% else %}
+                                                    <h5>{{ tk.designation }}</h5>
+                                                    {% if tk.user %}
+                                                        <small>{{ tk.user }}</small>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </form>
+                                        {% endif %}
+                                    </td>
+                                {% endfor %}
+                                <td>
+                                    <input type="hidden" class="status-id" value="0">
+                                    {% if not tk.status %}
+                                        <form class="task" method="post">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="task-id" value="{{ tk.id }}">
+                                                <input type="hidden" class="task-st-id" name="task-st-id" value="{{ tk.status.id }}">
+                                                <input type="hidden" name="update-task">
+                                                {% if is_manager %}
+                                                    <input onchange="this.form.submit();" type="text" name="designation" value="{{ tk.designation }}">
+                                                    <select onchange="this.form.submit();" name="user-id">
+                                                        <option value="0">-----</option>
+                                                        {% for tw in team %}
+                                                            <option {% if tw == tk.user %} selected {% endif %} value="{{ tw.id }}">{{ tw.username }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    <a onclick="rmTask(this);" style="cursor: pointer;">×</a>
+                                                {% else %}
+                                                    <h5>{{ tk.designation }}</h5>
+                                                    {% if tk.user %}
+                                                        <small>{{ tk.user }}</small>
+                                                    {% endif %}
+                                                {% endif %}
+                                            </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% if is_manager %}
+                    <h4>Nouvelle tâche</h4>
+                    <form method="POST">
+                        {% csrf_token %}
+                        {{ t_form }}
+                        <input type="submit" name="new-task">
+                    </form>
+                {% endif %}
+            </div>
+            {% if is_manager %}
+                <div class="bottom">
+                    <h2>Paramètres</h2>
+                    <a href="{% url 'project-update' pk=project.id %}">Modifier</a>
+                    <a href="{% url 'project-timeline' pk=project.id %}">Données statistiques</a>
+                    {% if invitation_key %}
+                        <a href="#" onclick="navigator.clipboard.writeText('{{ invitation_key.key }}'); alert('Clé copiée avec succes !');">Copier la clé </a>
+                    {% else %}
+                        <a href="{% url 'generate-new-key' pk=project.id %}">Créer une clé</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+
+    {% endif %}
+{% endblock %}
+{% block scripts %}
+    {{ block.super }}
+    function rmTask(el) {
+        var form = el.parentNode;
+
+        var ih = document.createElement("input");
+        ih.setAttribute("type", "hidden");
+        ih.setAttribute("name", "delete-task");
+        ih.setAttribute("value", "1");
+
+        form.appendChild(ih);
+        form.submit();
+    }
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block nav %}
+    {{ block.super }}
+    <li class="dropdown tile"><a href="{% url 'profile' %}">Profil</a></li>
+{% endblock %}
+{% block content %}
+    {% if user.is_authenticated %}
+        <div>
+            <a href="{% url 'project-detail' pk=project.id %}">Retour au projet</a>
+            <form method="post">
+                {% csrf_token %}
+                <fieldset>
+                    <legend>Projet</legend>
+                    {{ form.as_p }}
+                </fieldset>
+                <input type="submit" name="info-update">
+            </form>
+            <a href="{% url 'generate-new-key' pk=id %}">Actualiser la clé d'invitation</a>
+            {% for col in collaborators %}
+                <form method="post">
+                    {% csrf_token %}
+                    <p>{{ col.username }}</p>
+                    <input type="hidden" name="user-id" value="{{ col.id }}">
+                    <input type="submit" name="collaborator-remove">
+                </form>
+            {% empty %}
+                <p>Vide</p>
+            {% endfor %}
+            <form method="post">
+                {% csrf_token %}
+                <fieldset>
+                    <legend>Statuts</legend>
+                    <table>
+                        <thead>
+                            <tr>
+                                <td>Statut</td>
+                                <td>Couleur</td>
+                                <td>-</td>
+                            </tr>
+                        </thead>
+                        <tbody id="status-list">
+                            {% for st in status %}
+                                <tr>
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="update-status" value="{{ st.id }}">
+                                        <td><input onchange="this.form.submit();" type="text" name="designation" value="{{ st.designation }}"></td>
+                                        <td><input onchange="this.form.submit();" type="color" name="color" value="{{ st.color }}"></td>
+                                        <td><input type="submit" name="delete-status" value="&times;"></td>
+                                    </form>
+                                </tr>
+
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <hr>
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="text" name="designation" value="Nouveau Statut">
+                        <input type="color" name="color" value="#FFFFFF">
+                        <input type="submit" name="append-status" value="&plus;">
+                    </form>
+                </fieldset>
+            </form>
+        </div>
+    {% endif %}
+{% endblock %}
+{% block scripts %}
+    {{ block.super }}
+
+{% endblock %}

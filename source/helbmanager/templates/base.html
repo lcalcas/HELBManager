@@ -1,0 +1,95 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <script src="{% static 'www/dragula.js' %}"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/luxon@^2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-luxon@^1"></script>
+
+    {% block linkcss %}
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300&family=DM+Serif+Text&display=swap" rel="stylesheet">  
+        <link rel="stylesheet" type="text/css" href="{% static 'www/main.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'www/reset.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'www/responsive.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'www/navbar.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'www/dragula.css' %}">
+    {% endblock %}
+
+    {% if title %}
+        <title>HELBManager - {{ title }}</title>
+    {% else %}
+        <title>HELBManager</title>
+    {% endif %}
+</head>
+<body {% if init_on_load %} onload="init();" {% endif %}>
+    <header id="header">
+        <h1 id="title"><a href="{% url 'index' %}">HELBManager</a></h1>
+        {% if user.is_authenticated %}
+            <nav id="navbar">
+                <ul>
+                    <li>
+                        <button class="dropdown"><span>{{ user.username|title }}</span>
+                            <ul class="dropdown set">
+                                {% block nav %}
+                                    <li class="dropdown tile"><a href="{% url 'logout' %}">Déconnexion</a></li>
+                                {% endblock %}
+                            </ul>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        {% endif %}
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    <section id="alerts">
+        {% for notification in notifications %}
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="notification-id" value="{{ notification.id }}">
+                <p>{{ notification.log.task.project.title }}</p>
+                <small>{{ notification.text }}</small>
+                <small>{{ notification.log.datetime }}</small>
+                <button onclick="this.form.submit();">&times;</button>
+            </form>
+        {% endfor %}
+    </section>
+    <footer>
+        <p>&copy 2022 HELBManager</p>
+    </footer>
+    <script>
+        {% block scripts %}
+            function init() {
+                var drags = [];
+                let rows = document.getElementsByClassName("dragRow");
+                for (let i = 0; i < rows.length; i++) {
+                    let newDrag = dragula();
+                    let tds = rows[i].getElementsByTagName("td");
+                    for (let j = 0; j < tds.length; j++) {
+                        newDrag.containers.push(tds[j]);
+                    }
+                    newDrag.on("drop", function (el, target, source, sibling) {
+                        let newStatusId = target.getElementsByClassName("status-id")[0].value;
+                        el.getElementsByClassName("task-st-id")[0].value = newStatusId;
+                        el.submit();
+                    });
+                    drags.push(newDrag);
+                }
+            }
+
+            {% for message in messages %}
+                alert("{{ message }}");
+            {% endfor %}
+        {% endblock %}
+    </script>
+</body>
+</html>

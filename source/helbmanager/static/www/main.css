@@ -1,0 +1,270 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300&family=DM+Serif+Text&display=swap');
+
+/* Constantes */
+:root {
+    --color-back: #222831;
+    --color-display: #eeeeee;
+    --color-first: #393e46;
+    --color-second: #00adb5;
+}
+
+/* Polices */
+* {
+    font-family: 'DM Mono', monospace;
+}
+
+#title > *,
+th, th > *,
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'DM Serif Text', serif;
+}
+
+
+
+
+
+/* font-family: 'DM Mono', monospace;
+font-family: 'DM Serif Text', serif; */
+/*TODO
+
+
+* {
+    font-family: 'DM Mono', monospace;
+}
+
+h1 a,
+.topic,
+.subtopic {
+    font-family: 'DM Serif Text', serif;
+}
+
+h4 {
+    color: var(--color-second);
+}
+
+html,
+body {
+    height: 100vh;
+}
+
+body {
+    background-color: var(--color-back);
+    display: grid;
+    grid-template-columns: 4fr;
+    grid-template-rows: 3fr 35fr 2fr;
+    grid-template-areas:
+      "header"
+      "main"
+      "footer";
+}
+
+header {
+    grid-area: header;
+    background-color: var(--color-back);
+    box-shadow: 0 2px 0 0 var(--color-first);
+}
+
+main {
+    margin: auto;
+    padding: 5px 10px;
+    min-height: 80vh;
+    height: 80vh;
+    grid-area: main;
+    background-color: var(--color-back);
+    overflow: auto;
+    box-shadow: 
+        2px 0 0px 0px var(--color-first),
+        -2px 0 0px 0px var(--color-first);
+}
+
+footer {
+    grid-area: footer;
+    box-shadow: 0 -2px 0 0 var(--color-first);
+}
+
+a {
+    text-decoration: none;
+}
+
+:root {
+    --width-profile-btn: 150px;
+    --height-profile-btn: 20px;
+}
+
+#header {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+#title {
+    font-size: 3vh;
+}
+
+#navbar ul li {
+    display: inline-block;
+    width: var(--width-profile-btn);
+}
+
+#navbar ul li button {
+    width: 100%;
+    height: var(--height-profile-btn);
+    padding: 0;
+    border: 0;
+    color: var(--color-first);
+    background-color: var(--color-second);
+    overflow: hidden;
+}
+
+.dropdown.set {
+    display: none;
+}
+
+button:hover .dropdown.set {
+    display: flex;
+    position: fixed;
+    width: var(--width-profile-btn);
+    flex-direction: column;
+    align-items: stretch;
+}
+
+.dropdown.tile {
+    width: 100%;
+    height: var(--height-profile-btn);
+    border: 1px solid var(--color-second);
+    margin: 10px 0 0 0;
+    background-color: var(--color-first);
+}
+
+.dropdown.tile a {
+    color: var(--color-second);
+}
+
+.dropdown.tile a:hover{
+    color: var(--color-first);
+}
+
+#title a {
+    color: var(--color-second);
+}
+
+.dashboard {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.dashboard .topic {
+    color: var(--color-second);
+    font-size: 3vh;
+    margin: 0 0 2vh 0;
+}
+
+.dashboard .section .subtopic {
+    color: var(--color-second);
+    font-size: 2.7vh;
+    margin: 0 0 1.7vh 0;
+}
+
+.dashboard .section .content {
+    overflow: auto;
+    white-space: nowrap;
+    padding: 0 0 2vh 0;
+}
+
+.section.list button {
+    overflow: hidden;
+    max-width: 150px;
+    min-width: 150px;
+}
+
+.section.list button h3 {
+    font-size: larger;
+}
+
+.section.list button small {
+    font-size: smaller;
+}
+
+.section.list button p {
+    font-size: small;
+}
+
+.section.form .content form {
+    width: fit-content;
+}
+
+.section.form .content form p label {
+    display: inline-block;
+    width: 150px;
+    color: var(--color-display);
+}
+
+input[type=text],
+input[type=password] {
+    border: 0;
+    background-color: var(--color-first);
+    width: 200px;
+    color: var(--color-display);
+}
+
+input[type=text]:hover,
+input[type=password]:hover {
+    background-color: var(--color-back);
+}
+
+input[type=text]:focus-visible,
+input[type=password]:focus-visible {
+    outline: none;
+    color: var(--color-second);
+}
+
+input[type=submit] {
+    float: right;
+    border: 1px solid var(--color-second);
+    background-color: var(--color-back);
+    color: var(--color-second);
+}
+
+input[type=submit]:hover {
+    border: 1px solid var(--color-first);
+    background-color: var(--color-second);
+    color: var(--color-back);
+}
+
+p, small, li {
+    color: var(--color-display);
+}
+
+.task {
+    display: block;
+    padding: 5px;
+    border: 1px solid var(--color-second);
+    max-width: fit-content;
+}
+
+.projectview {
+    overflow: auto;
+    white-space: nowrap;
+}
+
+.table {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.st-column {
+    display: block;
+    max-width: fit-content;
+}
+
+.dragparent {
+    min-height: 10px;
+}
+
+.task {
+    border: 1px solid var(--color-second);
+}
+*/

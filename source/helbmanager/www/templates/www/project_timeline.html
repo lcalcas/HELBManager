@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+{% block nav %}
+    {{ block.super }}
+    <li class="dropdown tile"><a href="{% url 'profile' %}">Profil</a></li>
+{% endblock %}
+{% block content %}
+    {% if user.is_authenticated %}
+        <div>
+            <a href="{% url 'project-detail' pk=project.id %}">Retour au projet</a>
+            <h2>Timeline de {{ project }}</h2>
+            <div id="chartTarget">
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <select name="analysis-user-id" onchange="this.form.submit();">
+                    <option value="0">-----</option>
+                    {% for tw in team %}
+                        <option value="{{ tw.id }}" {% if analysis_user %}{% if analysis_user.id == tw.id %} selected {% endif %}{% endif %}>{{ tw.username }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+            {% if analysis_user %}
+                <h2>Répartition des tâches de {{ user.username }} par statut</h2>
+                <div id="analysisUserChartTarget">
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endblock %}
+{% block scripts %}
+    {{ block.super }}
+
+    var canvas = document.createElement('canvas');
+    canvas.setAttribute("style", "overflow-x: scroll;");
+    document.getElementById("chartTarget").appendChild(canvas);
+
+    {% if analysis_user %}
+        var analysisUserCanvas = document.createElement('canvas');
+        analysisUserCanvas.setAttribute("style", "max-width: 200px; max-height: 200px;");
+        document.getElementById("analysisUserChartTarget").appendChild(analysisUserCanvas);
+    {% endif %}
+
+    // setup
+    const data = {
+        labels: [
+            {% for task in tasks  %}
+                "{{ task.designation }}",
+            {% endfor %}
+        ],
+        datasets: [
+            {% for status in status %}
+                {
+                    label: '{{ status.designation }}',
+                    data: [
+
+                        {% for task_state in status.get_task_states %}
+                            {
+                                x: [new Date({{ task_state.datetime_start|date:"U"}} * 1000), new Date({% if task_state.datetime_stop %} {{ task_state.datetime_stop|date:"U" }} * 1000 {% else %} Date.now() {% endif %})],
+                                y: "{{ task_state.task.designation }}",
+                                otherData: '{{ task_state.user.username }}'
+                            },
+                        {% endfor %}
+                    ],
+                    backgroundColor: '{{ status.color }}',
+                    borderColor: 'rgba(0, 0, 0, 0)',
+                    borderWidth: 1     
+                },
+            {% endfor %}
+        ]
+    };    
+
+    // config
+    const config = {
+        type: 'bar',
+        data,
+        options: {
+            aspectRatio: 5,
+            indexAxis: 'y',
+            scales: {
+                x: {
+                    type: 'time',
+                    time: {
+                        unit: 'hour'
+                    },
+                    min: {{ project.datetime_created|date:"U" }} * 1000
+                },
+                y: {
+                    beginAtZero: true,
+                    stacked: true
+                }
+            },
+            plugins: {
+                /*tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let result = new Date(context.parsed._custom.start).toLocaleString() + " → " + new Date(context.parsed._custom.end).toLocaleString();
+                            result += "\nBy " + context.raw.otherData;
+                            return result;
+                        }
+                    }
+                }*/
+            }
+        }
+    };
+
+    // render init block
+    const myChart = new Chart(
+        canvas,
+        config
+    );
+
+    const userData = {
+        labels: [
+            {% for label in analysis_user_data %}
+                "{{ label }}",
+            {% endfor %}
+        ],
+        datasets: [{
+            label: 'Tâches de {{ analysis_user.username }}',
+            data: [
+                {% for label, nb_color in analysis_user_data.items %}
+                    {{ nb_color.nb }},
+                {% endfor %}
+            ],
+            backgroundColor: [
+                {% for label, nb_color in analysis_user_data.items %}
+                    '{{ nb_color.color }}',
+                {% endfor %}
+            ],
+            borderColor: "#000000",
+            hoverOffset: 4
+        }]
+    };
+
+
+    const userConfig = {
+        type: 'pie',
+        data: userData
+    };
+
+    {% if analysis_user %}
+        const analysisUserChart = new Chart(
+            analysisUserCanvas,
+            userConfig
+    );
+    {% endif %}
+
+    console.log(config);
+{% endblock %}

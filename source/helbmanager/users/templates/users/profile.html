@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+{% block linkcss %}
+    {{ block.super }}
+    <link rel="stylesheet" type="text/css" href="{% static 'www/profile.css' %}">
+{% endblock %}
+{% block content %}
+    {% if user.is_authenticated %}
+        <div>
+            {% if user_to_inspect %}
+                <p>OKK</p>
+            {% endif %}
+            <h2>{{ user.username|title }}</h2>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <fieldset>
+                    <legend>Modifier le profil</legend>
+                    {{ p_form.as_p }}
+                    {{ u_form.as_p }}
+                    <input type="submit">
+                </fieldset>
+            </form>
+        </div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+    {% if user.is_authenticated %}
+        <div>
+            <h2>Bonjour {{user.first_name|title}}</h2>
+            {% for project in projects %}
+                <article>
+                    <h2>{{ project.title }}</h2>
+                    <small>by {{ project.manager.username }}</small>
+                    <a href="{% url 'project-detail' pk=project.id %}">details</a>
+                </article>
+            {% empty %}
+                <small>Aucun projet à afficher...</small>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}

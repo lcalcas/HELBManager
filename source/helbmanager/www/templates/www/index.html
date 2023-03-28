@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block nav %}
+    <li class="dropdown tile"><a href="{% url 'profile' %}">Profil</a></li>
+    {{ block.super }}
+{% endblock %}
+{% block content %}
+    <div>
+        <div>
+            <h2>Projets</h2>
+            {% for project, manager in projects_managers %}
+                <button onclick="redirect('{% url 'project-detail' pk=project.id %}')">
+                    <h3>{{ project }}</h3>
+                    <small>CDP: <a href="#">{{ manager }}</a></small><!--TODO-->
+                </button>
+            {% empty %}
+                <p>Vous ne participez encore à aucun projet...</p>
+            {% endfor %}
+        <div>
+            <h2>Nouveau projet</h2>
+            <div>
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ create_form.as_p }}
+                    <input type="submit">
+                </form>
+            </div>
+        </div>
+        <div>
+            <h2>Rejoindre un projet</h2>
+            <div>
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ join_form.as_p }}
+                    <input type="submit">
+                </form>
+            </div>
+    </div>
+{% endblock %}
+{% block scripts%}
+    {{ block.super }}
+
+    function redirect(url) {
+    location.href = url;
+    }
+{% endblock %}
